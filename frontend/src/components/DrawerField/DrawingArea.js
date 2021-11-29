@@ -2,8 +2,8 @@ import React, { useRef, useState, useEffect } from 'react';
 import { Typography } from '@mui/material';
 
 const DrawingArea = () => {
-    const [draws, setDraws] = useState([]);
-    const [draw, setDraw] = useState({
+    const [messages, setMessages] = useState([]);
+    const [message, setMessage] = useState({
         mouseDown: false,
         pixelsArray: []
     });
@@ -13,27 +13,29 @@ const DrawingArea = () => {
     useEffect(() => {
         ws.current = new WebSocket('ws://localhost:8000/drawer');
 
-        ws.current.ondraw = e => {
+        ws.current.onmessage = e => {
             const decoded = JSON.parse(e.data);
 
             if (decoded.type === 'NEW_DRAW') {
-                setDraws(prev => [
+                setMessages(prev => [
                     ...prev,
-                    decoded.draw
+                    decoded.message,
                 ]);
             }
         }
     }, []);
 
+    console.log(messages[0])
+
     const canvas = useRef(null);
     const canvasMouseMoveHandler = event => {
 
-        if (draw.mouseDown) {
+        if (message.mouseDown) {
             event.persist();
             const clientX = event.clientX;
             const clientY = event.clientY;
 
-            setDraw(prevState => {
+            setMessage(prevState => {
                 return {
                     ...prevState,
                     pixelsArray: [...prevState.pixelsArray, {
@@ -56,17 +58,17 @@ const DrawingArea = () => {
     };
 
     const mouseDownHandler = event => {
-        setDraw({ ...draw, mouseDown: true });
+        setMessage({ ...message, mouseDown: true });
     };
 
     const mouseUpHandler = event => {
 
         // Где-то здесь отправлять массив пикселей на сервер
 
-        setDraw({ ...draw, mouseDown: false, pixelsArray: [] });
+        setMessage({ ...message, mouseDown: false, pixelsArray: [] });
         ws.current.send(JSON.stringify({
             type: 'CREATE_DRAW',
-            draw
+            message
         }));
 
     };
@@ -82,9 +84,9 @@ const DrawingArea = () => {
                 onMouseUp={mouseUpHandler}
                 onMouseMove={canvasMouseMoveHandler}
             >
-                {draws.map(draw => (
-                    { draw }
-                ))}
+                {/* {messages.map(message => (
+                    { message }
+                ))} */}
             </canvas>
         </>
     )

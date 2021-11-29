@@ -18,7 +18,7 @@ app.ws('/drawer', (ws, req) => {
     activeConnections[id] = ws;
     console.log(activeConnections);
 
-    ws.on('draw', msg => {
+    ws.on('message', msg => {
         const decoder = JSON.parse(msg);
 
         switch (decoder.type) {
@@ -28,7 +28,7 @@ app.ws('/drawer', (ws, req) => {
 
                 connection.send(JSON.stringify({
                     type: 'NEW_DRAW',
-                    draw: decoder.draw,
+                    message: decoder.message,
                 }))
             }); 
             break;
