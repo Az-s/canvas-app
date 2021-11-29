@@ -53,7 +53,7 @@ const DrawingArea = () => {
         <>
             <Typography>Draw a line on Canvas</Typography>
             <canvas ref={canvas}
-                style={{ border: '1px solid black' , borderRadius: '.3rem' }}
+                style={{ border: '1px solid black', borderRadius: '.3rem' }}
                 width={1600}
                 height={600}
                 onMouseDown={mouseDownHandler}
@@ -62,6 +62,6 @@ const DrawingArea = () => {
             </canvas>
         </>
     )
-}
+};
 
 export default DrawingArea;

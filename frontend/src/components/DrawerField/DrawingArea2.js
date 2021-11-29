@@ -68,6 +68,6 @@ const DrawingArea2 = ({ onClearLines, clearLines }) => {
             </Stage>
         </>
     )
-}
+};
 
 export default DrawingArea2;

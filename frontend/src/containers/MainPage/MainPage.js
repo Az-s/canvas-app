@@ -13,6 +13,6 @@ const MainPage = () => {
             </Grid>
         </Grid>
     )
-}
+};
 
 export default MainPage;

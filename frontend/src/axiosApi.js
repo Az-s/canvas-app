@@ -1,8 +1,9 @@
 import axios from 'axios';
-import {apiURL} from "./config";
+import { apiURL } from "./config";
 
-const axiosApi = axios.create({
-  baseURL: apiURL,
-});
+const axiosApi = axios.create(
+  {
+    baseURL: apiURL,
+  });
 
 export default axiosApi;

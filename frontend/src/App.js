@@ -17,6 +17,6 @@ const App = () => {
       </Grid>
     </BrowserRouter >
   );
-}
+};
 
 export default App;
