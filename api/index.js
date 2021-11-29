@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
-const nanoid = require('nanoid');
-const app = express();
+const {nanoid} = require('nanoid');
+const app  = express();
 
 require('express-ws')(app);
 
@@ -30,7 +30,7 @@ app.ws('/drawer', (ws, req) => {
                     type: 'NEW_DRAW',
                     draw: decoder.draw,
                 }))
-            });
+            }); 
             break;
             default: 
                 console.log('Unknown type:' , decoder.type);
