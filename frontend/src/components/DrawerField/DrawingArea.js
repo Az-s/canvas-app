@@ -1,21 +1,39 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { Typography } from '@mui/material';
 
 const DrawingArea = () => {
-    const [state, setState] = useState({
+    const [draws, setDraws] = useState([]);
+    const [draw, setDraw] = useState({
         mouseDown: false,
         pixelsArray: []
     });
 
+    const ws = useRef(null);
+
+    useEffect(() => {
+        ws.current = new WebSocket('ws://localhost:8000/drawer');
+
+        ws.current.ondraw = e => {
+            const decoded = JSON.parse(e.data);
+
+            if (decoded.type === 'NEW_DRAW') {
+                setDraws(prev => [
+                    ...prev,
+                    decoded.draw
+                ]);
+            }
+        }
+    }, []);
+
     const canvas = useRef(null);
     const canvasMouseMoveHandler = event => {
 
-        if (state.mouseDown) {
+        if (draw.mouseDown) {
             event.persist();
             const clientX = event.clientX;
             const clientY = event.clientY;
 
-            setState(prevState => {
+            setDraw(prevState => {
                 return {
                     ...prevState,
                     pixelsArray: [...prevState.pixelsArray, {
@@ -38,14 +56,18 @@ const DrawingArea = () => {
     };
 
     const mouseDownHandler = event => {
-        setState({ ...state, mouseDown: true });
+        setDraw({ ...draw, mouseDown: true });
     };
 
     const mouseUpHandler = event => {
 
         // Где-то здесь отправлять массив пикселей на сервер
 
-        setState({ ...state, mouseDown: false, pixelsArray: [] });
+        setDraw({ ...draw, mouseDown: false, pixelsArray: [] });
+        ws.current.send(JSON.stringify({
+            type: 'CREATE_DRAW',
+            draw
+        }));
 
     };
 
@@ -58,7 +80,11 @@ const DrawingArea = () => {
                 height={600}
                 onMouseDown={mouseDownHandler}
                 onMouseUp={mouseUpHandler}
-                onMouseMove={canvasMouseMoveHandler}>
+                onMouseMove={canvasMouseMoveHandler}
+            >
+                {draws.map(draw => (
+                    { draw }
+                ))}
             </canvas>
         </>
     )
