@@ -6,9 +6,25 @@ import { Typography } from '@mui/material';
 const DrawingArea2 = ({ onClearLines, clearLines }) => {
 
     const [lines, setLines] = useState([]);
+    const [draw, setDraw] = useState({
+        mouseDown: false,
+        pixelsArray: []
+    });
     const isDrawing = useRef(false);
 
     useEffect(() => {
+        isDrawing.current = new WebSocket('ws://localhost:8000/drawer');
+
+        isDrawing.current.ondraw = e => {
+            const decoded = JSON.parse(e.data);
+
+            if (decoded.type === 'NEW_DRAW') {
+                setLines(prev => [
+                    ...prev,
+                    decoded.draw
+                ]);
+            }
+        }
     }, [clearLines])
 
     const handleMouseDown = (e) => {
@@ -37,11 +53,18 @@ const DrawingArea2 = ({ onClearLines, clearLines }) => {
 
     const handleMouseUp = () => {
         isDrawing.current = false;
+
+        setDraw({ ...draw, mouseDown: false, pixelsArray: [] });
+
+        isDrawing.current.send(JSON.stringify({
+            type: 'CREATE_DRAW',
+            draw
+        }));
     };
 
     return (
         <>
-        <Typography>Draw a line on Canvas</Typography>
+            <Typography>Draw a line on Canvas</Typography>
             <Stage
                 style={{ border: '1px solid black', borderRadius: '.3rem' }}
                 width={1600}
