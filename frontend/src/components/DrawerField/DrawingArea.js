@@ -26,7 +26,7 @@ const DrawingArea = () => {
             });
 
             const context = canvas.current.getContext('2d');
-            const imageData = context.createImageData(1, 1);
+            const imageData = context.createImageData(10, 10);
             const d = imageData.data;
 
             d[0] = 0;
